@@ -1,5 +1,6 @@
-// src/App.tsx
-import React, { useState, useCallback } from 'react'
+// src/App.tsx (改良版)
+import React, { useState, ChangeEvent } from 'react'
+import { useHalloweenFilter } from './hooks/useHalloweenFilter'
 import { ImageUploader } from './components/ImageUploader'
 import { HalloweenTransformer } from './components/HalloweenTransformer'
 import { ImagePreview } from './components/ImagePreview'
@@ -13,95 +14,166 @@ interface ProcessedImage {
 }
 
 const App: React.FC = () => {
-  const [processedImage, setProcessedImage] = useState<ProcessedImage | null>(null)
+  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [transformedImage, setTransformedImage] = useState<string | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string>('')
+  
+  const { transformImage, loading, error } = useHalloweenFilter()
 
-  const handleImageUpload = useCallback((file: File) => {
-    const originalUrl = URL.createObjectURL(file)
-    setProcessedImage({
-      original: originalUrl,
-      loading: false
-    })
-  }, [])
+  const handleImageSelect = (event: ChangeEvent<HTMLInputElement>): void => {
+    const file = event.target.files?.[0]
+    if (file) {
+      setSelectedImage(file)
+      const url = URL.createObjectURL(file)
+      setPreviewUrl(url)
+      setTransformedImage(null) // リセット
+    }
+  }
 
-  const handleTransformStart = useCallback(() => {
-    if (processedImage) {
-      setProcessedImage({
-        ...processedImage,
-        loading: true,
-        error: undefined
-      })
+  const transformToHalloween = async (): Promise<void> => {
+    if (!selectedImage) return
+    
+    try {
+      const result = await transformImage(selectedImage)
+      setTransformedImage(result)
+      
+    } catch (error) {
+      console.error('変換エラー:', error)
+      alert('変換に失敗しました')
     }
-  }, [processedImage])
+  }
 
-  const handleTransformComplete = useCallback((transformedUrl: string) => {
-    if (processedImage) {
-      setProcessedImage({
-        ...processedImage,
-        transformed: transformedUrl,
-        loading: false
-      })
-    }
-  }, [processedImage])
+  const handleDownload = (): void => {
+    if (!transformedImage) return
+    
+    const link = document.createElement('a')
+    link.download = `halloween-magic-${Date.now()}.png`
+    link.href = transformedImage
+    link.click()
+  }
 
-  const handleTransformError = useCallback((error: string) => {
-    if (processedImage) {
-      setProcessedImage({
-        ...processedImage,
-        loading: false,
-        error
-      })
+  const handleReset = (): void => {
+    setSelectedImage(null)
+    setTransformedImage(null)
+    setPreviewUrl('')
+    
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
     }
-  }, [processedImage])
-
-  const handleReset = useCallback(() => {
-    if (processedImage?.original) {
-      URL.revokeObjectURL(processedImage.original)
-    }
-    if (processedImage?.transformed) {
-      URL.revokeObjectURL(processedImage.transformed)
-    }
-    setProcessedImage(null)
-  }, [processedImage])
+  }
 
   return (
     <div className="app">
-      <header className="app-header">
-        <h1>🎃 Halloween Photo Transformer</h1>
-        <p>Transform your photos with Halloween magic!</p>
-      </header>
+      {/* ヘッダー */}
+      <div className="navbar">
+        <div className="navbar-content">
+          <h1 className="app-title">
+            🎃 ハロウィン写真変換アプリ
+          </h1>
+          <div className="app-description">
+            写真をアップロードして、AIでハロウィン風に変換しよう！
+          </div>
+        </div>
+      </div>
 
-      <main className="app-main">
-        {!processedImage ? (
-          <ImageUploader onImageUpload={handleImageUpload} />
+      {/* メインコンテンツ */}
+      <div className="container">
+        {!selectedImage ? (
+          /* アップロードエリア */
+          <div className="upload-section">
+            <ImageUploader onImageUpload={handleImageSelect} />
+          </div>
         ) : (
-          <div className="transform-section">
-            <ImagePreview
-              originalUrl={processedImage.original}
-              transformedUrl={processedImage.transformed}
-              loading={processedImage.loading}
-              error={processedImage.error}
-            />
-            
+          /* 比較表示エリア */
+          <div className="comparison-section">
+            {/* 画像比較エリア */}
+            <div className="image-comparison">
+              {/* オリジナル画像 */}
+              <div className="image-panel">
+                <h3 className="panel-title">元の写真</h3>
+                <div className="image-container">
+                  <img 
+                    src={previewUrl} 
+                    alt="元の写真" 
+                    className="comparison-image"
+                  />
+                </div>
+              </div>
+
+              {/* 変換後画像 */}
+              <div className="image-panel">
+                <h3 className="panel-title">ハロウィン変換後</h3>
+                <div className="image-container">
+                  {loading && (
+                    <div className="loading-container">
+                      <div className="spinner"></div>
+                      <p>ハロウィン魔法をかけています...</p>
+                    </div>
+                  )}
+                  
+                  {transformedImage && !loading && (
+                    <img 
+                      src={transformedImage} 
+                      alt="ハロウィン変換後" 
+                      className="comparison-image"
+                    />
+                  )}
+                  
+                  {!transformedImage && !loading && (
+                    <div className="placeholder-container">
+                      <div className="placeholder-icon">🎭</div>
+                      <p>「ハロウィン変換」ボタンを<br/>押して変換してください</p>
+                    </div>
+                  )}
+                  
+                  {error && (
+                    <div className="error-container">
+                      <p className="error-message">{error}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* コントロールエリア */}
             <div className="controls">
-              <HalloweenTransformer
-                imageUrl={processedImage.original}
-                onTransformStart={handleTransformStart}
-                onTransformComplete={handleTransformComplete}
-                onTransformError={handleTransformError}
-                disabled={processedImage.loading}
-              />
+              <button 
+                onClick={transformToHalloween}
+                disabled={loading}
+                className={`transform-btn ${loading ? 'loading' : ''}`}
+                type="button"
+              >
+                {loading ? (
+                  <>
+                    <span className="btn-spinner"></span>
+                    変換中...
+                  </>
+                ) : (
+                  '🎃 ハロウィン変換'
+                )}
+              </button>
               
+              {transformedImage && (
+                <button 
+                  onClick={handleDownload}
+                  className="download-btn"
+                  type="button"
+                >
+                  📱 ダウンロード
+                </button>
+              )}
+
               <button 
                 onClick={handleReset}
                 className="reset-btn"
                 type="button"
               >
-                🔄 New Photo
+                🔄 新しい写真
               </button>
             </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   )
 }
