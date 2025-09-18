@@ -106,7 +106,7 @@ const App: React.FC = () => {
     if (!transformedImage) return
     
     const link = document.createElement('a')
-    link.download = `halloween-magic-\${Date.now()}.png`
+    link.download = `halloween-magic.png`
     link.href = transformedImage
     link.click()
   }
