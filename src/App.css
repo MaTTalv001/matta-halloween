@@ -4,25 +4,23 @@
   box-sizing: border-box;
 }
 
+html,
 body {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(135deg, #ff6b35, #8b5a3c, #2c1810);
   overflow-x: hidden;
 }
 
 .app {
   min-height: 100vh;
+  height: 100%;
+  width: 100%;
   background: linear-gradient(135deg, #ff6b35, #8b5a3c, #2c1810);
   color: white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  width: 100%;
-}
-
-/* メインラッパー - 画面幅制御 */
-.main-wrapper {
-  width: 100%;
-  min-height: calc(100vh - 120px);
   display: flex;
-  justify-content: center;
-  background: inherit;
+  flex-direction: column;
 }
 
 /* ヘッダー */
@@ -32,6 +30,7 @@ body {
   padding: 1.5rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   width: 100%;
+  flex-shrink: 0;
 }
 
 .navbar-content {
@@ -53,12 +52,22 @@ body {
   opacity: 0.9;
 }
 
-/* コンテナ - 最大幅設定と中央配置 */
+/* メインラッパー - 確実に中央配置 */
+.main-wrapper {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 0;
+}
+
+/* コンテナ - 中央配置確保 */
 .container {
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
   width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
   position: relative;
 }
 
@@ -341,7 +350,11 @@ body {
   }
 
   .container {
-    padding: 1rem;
+    padding: 0 1rem;
+  }
+
+  .main-wrapper {
+    padding: 1rem 0;
   }
 
   .image-comparison {

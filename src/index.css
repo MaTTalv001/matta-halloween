@@ -1,68 +1,401 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
+* {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(135deg, #ff6b35, #8b5a3c, #2c1810);
+  overflow-x: hidden;
+}
+
+.app {
   min-height: 100vh;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(135deg, #ff6b35, #8b5a3c, #2c1810);
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* ヘッダー - 完全中央配置 */
+.navbar {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+.navbar-content {
+  text-align: center;
+  padding: 0 2rem;
+  width: 100%;
+  max-width: none;
+}
+
+.app-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.app-description {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+/* メインラッパー - 完全中央配置 */
+.main-wrapper {
+  width: 100%;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+}
+
+/* コンテナ - 中央配置確保 */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+/* アップロードセクション - 完全中央配置 */
+.upload-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+/* 比較セクション */
+.comparison-section {
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* 画像比較エリア */
+.image-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+/* 大画面での調整 */
+@media (min-width: 1400px) {
+  .image-comparison {
+    gap: 3rem;
+  }
+
+  .image-container {
+    height: 500px;
+  }
+
+  .comparison-section {
+    max-width: 1400px;
+  }
+}
+
+.image-panel {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  width: 100%;
+}
+
+.panel-title {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #ff6b35;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+}
+
+.comparison-image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+/* ローディング */
+.loading-container {
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #ff6b35;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* プレースホルダー */
+.placeholder-container {
+  text-align: center;
+  color: #999;
+  padding: 2rem;
+}
+
+.placeholder-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+/* エラー */
+.error-container {
+  text-align: center;
+  color: #dc3545;
+  padding: 2rem;
+}
+
+.error-message {
+  font-weight: bold;
+}
+
+/* コントロール */
+.controls {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.transform-btn,
+.download-btn,
+.reset-btn {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: bold;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  min-width: 160px;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+.transform-btn {
+  background: linear-gradient(45deg, #ff6b35, #ff8c42);
+  color: white;
+}
+
+.transform-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.transform-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.download-btn {
+  background: linear-gradient(45deg, #28a745, #20c997);
+  color: white;
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.reset-btn {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.reset-btn:hover {
+  background: white;
+  color: #ff6b35;
+  transform: translateY(-2px);
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+}
+
+/* アップローダー - 完全中央配置 */
+.image-uploader {
+  border: 3px dashed rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  padding: 4rem 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.image-uploader:hover {
+  border-color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.image-uploader.drag-over {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
+}
+
+.upload-content .upload-icon {
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
+}
+
+.upload-content h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.upload-content p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.file-input {
+  display: none;
+}
+
+.upload-btn {
+  background: linear-gradient(45deg, #ff6b35, #ff8c42);
+  color: white;
+  padding: 1.2rem 2.5rem;
+  border-radius: 25px;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: inline-block;
+}
+
+.upload-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.upload-info {
+  margin-top: 1.5rem;
+  opacity: 0.8;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .app-title {
+    font-size: 2rem;
   }
-  a:hover {
-    color: #747bff;
+
+  .app-description {
+    font-size: 1rem;
   }
-  button {
-    background-color: #f9f9f9;
+
+  .main-wrapper {
+    padding: 1rem;
+  }
+
+  .image-comparison {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .image-container {
+    height: 300px;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .transform-btn,
+  .download-btn,
+  .reset-btn {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .image-uploader {
+    max-width: 100%;
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .upload-content .upload-icon {
+    font-size: 3rem;
+  }
+
+  .upload-content h3 {
+    font-size: 1.5rem;
+  }
+
+  .upload-content p {
+    font-size: 1rem;
+  }
+
+  .upload-btn {
+    padding: 1rem 2rem;
+    font-size: 1rem;
   }
 }
