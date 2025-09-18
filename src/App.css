@@ -1,3 +1,4 @@
+/* src/App.css (画面幅対応改善版) */
 * {
   margin: 0;
   padding: 0;
@@ -20,7 +21,8 @@
 }
 
 .navbar-content {
-  max-width: 1200px;
+  max-width: 1400px;
+  /* 幅を拡張 */
   margin: 0 auto;
   text-align: center;
   padding: 0 2rem;
@@ -40,9 +42,11 @@
 
 /* コンテナ */
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
+  /* 幅を拡張 */
   margin: 0 auto;
   padding: 2rem;
+  width: 100%;
 }
 
 /* アップロードセクション */
@@ -51,6 +55,7 @@
   justify-content: center;
   align-items: center;
   min-height: 60vh;
+  width: 100%;
 }
 
 /* 比較セクション */
@@ -62,8 +67,39 @@
 .image-comparison {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 3rem;
+  /* ギャップを拡張 */
   margin-bottom: 2rem;
+  width: 100%;
+}
+
+/* 大画面での画像パネル調整 */
+@media (min-width: 1200px) {
+  .image-comparison {
+    gap: 4rem;
+    /* さらに大きなギャップ */
+  }
+
+  .image-container {
+    height: 500px;
+    /* 大画面では高さを拡張 */
+  }
+}
+
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1600px;
+    /* 超大画面対応 */
+  }
+
+  .image-comparison {
+    gap: 5rem;
+  }
+
+  .image-container {
+    height: 600px;
+    /* 超大画面では更に高さを拡張 */
+  }
 }
 
 .image-panel {
@@ -71,6 +107,8 @@
   border-radius: 15px;
   padding: 1.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  /* 幅を確実に埋める */
 }
 
 .panel-title {
@@ -85,7 +123,6 @@
   position: relative;
   width: 100%;
   height: 400px;
-  /* 固定高さ */
   border: 2px solid #ddd;
   border-radius: 10px;
   overflow: hidden;
@@ -101,7 +138,6 @@
   width: auto;
   height: auto;
   object-fit: contain;
-  /* 比率を保って収める */
 }
 
 /* ローディング */
@@ -153,15 +189,19 @@
 /* コントロール */
 .controls {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
+  /* ギャップを拡張 */
   justify-content: center;
   flex-wrap: wrap;
+  margin-top: 3rem;
+  /* マージンを拡張 */
 }
 
 .transform-btn,
 .download-btn,
 .reset-btn {
-  padding: 1rem 2rem;
+  padding: 1rem 2.5rem;
+  /* パディングを拡張 */
   border: none;
   border-radius: 25px;
   font-size: 1.1rem;
@@ -169,12 +209,13 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  min-width: 180px;
+  /* 最小幅を設定 */
 }
 
 .transform-btn {
   background: linear-gradient(45deg, #ff6b35, #ff8c42);
   color: white;
-  min-width: 180px;
 }
 
 .transform-btn:hover:not(:disabled) {
@@ -221,39 +262,7 @@
   margin-right: 8px;
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-  .app-title {
-    font-size: 2rem;
-  }
-
-  .app-description {
-    font-size: 1rem;
-  }
-
-  .image-comparison {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .image-container {
-    height: 300px;
-  }
-
-  .controls {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .transform-btn,
-  .download-btn,
-  .reset-btn {
-    width: 100%;
-    max-width: 300px;
-  }
-}
-
-/* ImageUploader コンポーネントのスタイル */
+/* アップローダー */
 .image-uploader {
   border: 3px dashed rgba(255, 255, 255, 0.7);
   border-radius: 20px;
@@ -263,8 +272,10 @@
   cursor: pointer;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(5px);
-  max-width: 600px;
+  max-width: 800px;
+  /* 幅を拡張 */
   margin: 0 auto;
+  width: 100%;
 }
 
 .image-uploader.drag-over {
@@ -293,4 +304,66 @@
 }
 
 .upload-btn {
-  background: linear-gradient(45deg, #ff6b
+  background: linear-gradient(45deg, #ff6b35, #ff8c42);
+  color: white;
+  padding: 1.2rem 2.5rem;
+  border-radius: 25px;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.upload-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.upload-info {
+  margin-top: 1.5rem;
+  opacity: 0.8;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .app-title {
+    font-size: 2rem;
+  }
+
+  .app-description {
+    font-size: 1rem;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  .image-comparison {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .image-container {
+    height: 300px;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .transform-btn,
+  .download-btn,
+  .reset-btn {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .image-uploader {
+    max-width: 100%;
+    padding: 2rem 1rem;
+  }
+}
