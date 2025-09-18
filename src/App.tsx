@@ -1,24 +1,14 @@
-// src/App.tsx (改良版)
+// src/App.tsx
 import React, { useState, ChangeEvent } from 'react'
-import { useHalloweenFilter } from './hooks/useHalloweenFilter'
 import { ImageUploader } from './components/ImageUploader'
-import { HalloweenTransformer } from './components/HalloweenTransformer'
-import { ImagePreview } from './components/ImagePreview'
 import './App.css'
-
-interface ProcessedImage {
-  original: string
-  transformed?: string
-  loading?: boolean
-  error?: string
-}
 
 const App: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [transformedImage, setTransformedImage] = useState<string | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>('')
-  
-  const { transformImage, loading, error } = useHalloweenFilter()
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleImageSelect = (event: ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0]
@@ -26,20 +16,58 @@ const App: React.FC = () => {
       setSelectedImage(file)
       const url = URL.createObjectURL(file)
       setPreviewUrl(url)
-      setTransformedImage(null) // リセット
+      setTransformedImage(null)
+      setError(null)
     }
+  }
+
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = error => reject(error)
+    })
   }
 
   const transformToHalloween = async (): Promise<void> => {
     if (!selectedImage) return
     
+    setLoading(true)
+    setError(null)
+    
     try {
-      const result = await transformImage(selectedImage)
-      setTransformedImage(result)
+      const base64Data = await fileToBase64(selectedImage)
       
-    } catch (error) {
-      console.error('変換エラー:', error)
-      alert('変換に失敗しました')
+      const response = await fetch('/api/transform-halloween', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageData: base64Data
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP ${response.status}`)
+      }
+
+      const data = await response.json()
+      
+      if (data.success && data.transformedImage) {
+        setTransformedImage(data.transformedImage)
+      } else {
+        throw new Error(data.error || '変換に失敗しました')
+      }
+      
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : '不明なエラー'
+      setError(errorMessage)
+      console.error('変換エラー:', err)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -56,6 +84,7 @@ const App: React.FC = () => {
     setSelectedImage(null)
     setTransformedImage(null)
     setPreviewUrl('')
+    setError(null)
     
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl)
@@ -64,7 +93,6 @@ const App: React.FC = () => {
 
   return (
     <div className="app">
-      {/* ヘッダー */}
       <div className="navbar">
         <div className="navbar-content">
           <h1 className="app-title">
@@ -76,19 +104,14 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      {/* メインコンテンツ */}
       <div className="container">
         {!selectedImage ? (
-          /* アップロードエリア */
           <div className="upload-section">
             <ImageUploader onImageUpload={handleImageSelect} />
           </div>
         ) : (
-          /* 比較表示エリア */
           <div className="comparison-section">
-            {/* 画像比較エリア */}
             <div className="image-comparison">
-              {/* オリジナル画像 */}
               <div className="image-panel">
                 <h3 className="panel-title">元の写真</h3>
                 <div className="image-container">
@@ -100,7 +123,6 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* 変換後画像 */}
               <div className="image-panel">
                 <h3 className="panel-title">ハロウィン変換後</h3>
                 <div className="image-container">
@@ -135,7 +157,6 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            {/* コントロールエリア */}
             <div className="controls">
               <button 
                 onClick={transformToHalloween}
