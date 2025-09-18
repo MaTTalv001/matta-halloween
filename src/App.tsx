@@ -1,6 +1,5 @@
 // src/App.tsx
 import React, { useState, ChangeEvent } from 'react'
-import { ImageUploader } from './components/ImageUploader'
 import './App.css'
 
 const App: React.FC = () => {
@@ -107,7 +106,28 @@ const App: React.FC = () => {
       <div className="container">
         {!selectedImage ? (
           <div className="upload-section">
-            <ImageUploader onImageUpload={handleImageSelect} />
+            <div className="image-uploader">
+              <div className="upload-content">
+                <div className="upload-icon">📸</div>
+                <h3>写真をアップロード</h3>
+                <p>ドラッグ＆ドロップまたはクリックして選択</p>
+                
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  className="file-input"
+                  id="file-input"
+                />
+                <label htmlFor="file-input" className="upload-btn">
+                  写真を選択
+                </label>
+                
+                <div className="upload-info">
+                  <small>対応形式: JPG, PNG, WEBP • 最大 5MB</small>
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="comparison-section">
