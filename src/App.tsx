@@ -132,6 +132,9 @@ const App: React.FC = () => {
           <div className="app-description">
             写真をアップロードして、AIでハロウィン風に変換しよう！
           </div>
+          <div className="app-description">
+            お詫び：APIの機嫌が悪いとちょいちょいエラー吐きます・・・
+          </div>
         </div>
       </div>
 
@@ -163,6 +166,9 @@ const App: React.FC = () => {
                   
                   <div className="upload-info">
                     <small>対応形式: JPG, PNG, WEBP • 最大 5MB</small>
+                  </div>
+                  <div className="upload-info">
+                    <small>画像はサーバー上に残りません</small>
                   </div>
                 </div>
               </div>
