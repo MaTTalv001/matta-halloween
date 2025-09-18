@@ -1,8 +1,11 @@
-/* src/App.css (画面幅対応改善版) */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 .app {
@@ -10,6 +13,16 @@
   background: linear-gradient(135deg, #ff6b35, #8b5a3c, #2c1810);
   color: white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  width: 100%;
+}
+
+/* メインラッパー - 画面幅制御 */
+.main-wrapper {
+  width: 100%;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  justify-content: center;
+  background: inherit;
 }
 
 /* ヘッダー */
@@ -18,11 +31,11 @@
   backdrop-filter: blur(10px);
   padding: 1.5rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
 }
 
 .navbar-content {
-  max-width: 1400px;
-  /* 幅を拡張 */
+  max-width: 1200px;
   margin: 0 auto;
   text-align: center;
   padding: 0 2rem;
@@ -40,13 +53,13 @@
   opacity: 0.9;
 }
 
-/* コンテナ */
+/* コンテナ - 最大幅設定と中央配置 */
 .container {
-  max-width: 1400px;
-  /* 幅を拡張 */
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
   width: 100%;
+  position: relative;
 }
 
 /* アップロードセクション */
@@ -67,38 +80,23 @@
 .image-comparison {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  /* ギャップを拡張 */
+  gap: 2rem;
   margin-bottom: 2rem;
   width: 100%;
 }
 
-/* 大画面での画像パネル調整 */
-@media (min-width: 1200px) {
+/* 大画面での調整 */
+@media (min-width: 1400px) {
   .image-comparison {
-    gap: 4rem;
-    /* さらに大きなギャップ */
+    gap: 3rem;
   }
 
   .image-container {
     height: 500px;
-    /* 大画面では高さを拡張 */
   }
-}
 
-@media (min-width: 1600px) {
   .container {
-    max-width: 1600px;
-    /* 超大画面対応 */
-  }
-
-  .image-comparison {
-    gap: 5rem;
-  }
-
-  .image-container {
-    height: 600px;
-    /* 超大画面では更に高さを拡張 */
+    max-width: 1400px;
   }
 }
 
@@ -108,7 +106,6 @@
   padding: 1.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   width: 100%;
-  /* 幅を確実に埋める */
 }
 
 .panel-title {
@@ -186,22 +183,23 @@
   padding: 2rem;
 }
 
+.error-message {
+  font-weight: bold;
+}
+
 /* コントロール */
 .controls {
   display: flex;
   gap: 1.5rem;
-  /* ギャップを拡張 */
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 3rem;
-  /* マージンを拡張 */
+  margin-top: 2rem;
 }
 
 .transform-btn,
 .download-btn,
 .reset-btn {
-  padding: 1rem 2.5rem;
-  /* パディングを拡張 */
+  padding: 1rem 2rem;
   border: none;
   border-radius: 25px;
   font-size: 1.1rem;
@@ -209,8 +207,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  min-width: 180px;
-  /* 最小幅を設定 */
+  min-width: 160px;
 }
 
 .transform-btn {
@@ -272,15 +269,21 @@
   cursor: pointer;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(5px);
-  max-width: 800px;
-  /* 幅を拡張 */
+  max-width: 600px;
   margin: 0 auto;
   width: 100%;
+}
+
+.image-uploader:hover {
+  border-color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .image-uploader.drag-over {
   border-color: white;
   background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
 }
 
 .upload-content .upload-icon {
@@ -314,6 +317,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: inline-block;
 }
 
 .upload-btn:hover {
@@ -365,5 +369,24 @@
   .image-uploader {
     max-width: 100%;
     padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .upload-content .upload-icon {
+    font-size: 3rem;
+  }
+
+  .upload-content h3 {
+    font-size: 1.5rem;
+  }
+
+  .upload-content p {
+    font-size: 1rem;
+  }
+
+  .upload-btn {
+    padding: 1rem 2rem;
+    font-size: 1rem;
   }
 }

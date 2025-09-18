@@ -1,5 +1,4 @@
-// src/App.tsx
-import React, { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent, DragEvent } from 'react'
 import './App.css'
 
 const App: React.FC = () => {
@@ -8,15 +7,48 @@ const App: React.FC = () => {
   const [previewUrl, setPreviewUrl] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
+  const [isDragOver, setIsDragOver] = useState<boolean>(false)
 
   const handleImageSelect = (event: ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0]
     if (file) {
+      processImageFile(file)
+    }
+  }
+
+  const processImageFile = (file: File): void => {
+    if (file && file.type.startsWith('image/')) {
       setSelectedImage(file)
       const url = URL.createObjectURL(file)
       setPreviewUrl(url)
       setTransformedImage(null)
       setError(null)
+    } else {
+      setError('画像ファイルを選択してください')
+    }
+  }
+
+  const handleDragOver = (event: DragEvent<HTMLDivElement>): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setIsDragOver(true)
+  }
+
+  const handleDragLeave = (event: DragEvent<HTMLDivElement>): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setIsDragOver(false)
+  }
+
+  const handleDrop = (event: DragEvent<HTMLDivElement>): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setIsDragOver(false)
+    
+    const files = event.dataTransfer.files
+    if (files && files.length > 0) {
+      const file = files[0]
+      processImageFile(file)
     }
   }
 
@@ -50,7 +82,7 @@ const App: React.FC = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || `HTTP ${response.status}`)
+        throw new Error(errorData.error || `HTTP \${response.status}`)
       }
 
       const data = await response.json()
@@ -74,7 +106,7 @@ const App: React.FC = () => {
     if (!transformedImage) return
     
     const link = document.createElement('a')
-    link.download = `halloween-magic-${Date.now()}.png`
+    link.download = `halloween-magic-\${Date.now()}.png`
     link.href = transformedImage
     link.click()
   }
@@ -103,117 +135,124 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <div className="container">
-        {!selectedImage ? (
-          <div className="upload-section">
-            <div className="image-uploader">
-              <div className="upload-content">
-                <div className="upload-icon">📸</div>
-                <h3>写真をアップロード</h3>
-                <p>ドラッグ＆ドロップまたはクリックして選択</p>
-                
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageSelect}
-                  className="file-input"
-                  id="file-input"
-                />
-                <label htmlFor="file-input" className="upload-btn">
-                  写真を選択
-                </label>
-                
-                <div className="upload-info">
-                  <small>対応形式: JPG, PNG, WEBP • 最大 5MB</small>
+      <div className="main-wrapper">
+        <div className="container">
+          {!selectedImage ? (
+            <div className="upload-section">
+              <div 
+                className={`image-uploader \${isDragOver ? 'drag-over' : ''}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <div className="upload-content">
+                  <div className="upload-icon">📸</div>
+                  <h3>写真をアップロード</h3>
+                  <p>ドラッグ＆ドロップまたはクリックして選択</p>
+                  
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="file-input"
+                    id="file-input"
+                  />
+                  <label htmlFor="file-input" className="upload-btn">
+                    写真を選択
+                  </label>
+                  
+                  <div className="upload-info">
+                    <small>対応形式: JPG, PNG, WEBP • 最大 5MB</small>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="comparison-section">
-            <div className="image-comparison">
-              <div className="image-panel">
-                <h3 className="panel-title">元の写真</h3>
-                <div className="image-container">
-                  <img 
-                    src={previewUrl} 
-                    alt="元の写真" 
-                    className="comparison-image"
-                  />
-                </div>
-              </div>
-
-              <div className="image-panel">
-                <h3 className="panel-title">ハロウィン変換後</h3>
-                <div className="image-container">
-                  {loading && (
-                    <div className="loading-container">
-                      <div className="spinner"></div>
-                      <p>ハロウィン魔法をかけています...</p>
-                    </div>
-                  )}
-                  
-                  {transformedImage && !loading && (
+          ) : (
+            <div className="comparison-section">
+              <div className="image-comparison">
+                <div className="image-panel">
+                  <h3 className="panel-title">元の写真</h3>
+                  <div className="image-container">
                     <img 
-                      src={transformedImage} 
-                      alt="ハロウィン変換後" 
+                      src={previewUrl} 
+                      alt="元の写真" 
                       className="comparison-image"
                     />
-                  )}
-                  
-                  {!transformedImage && !loading && (
-                    <div className="placeholder-container">
-                      <div className="placeholder-icon">🎭</div>
-                      <p>「ハロウィン変換」ボタンを<br/>押して変換してください</p>
-                    </div>
-                  )}
-                  
-                  {error && (
-                    <div className="error-container">
-                      <p className="error-message">{error}</p>
-                    </div>
-                  )}
+                  </div>
+                </div>
+
+                <div className="image-panel">
+                  <h3 className="panel-title">ハロウィン変換後</h3>
+                  <div className="image-container">
+                    {loading && (
+                      <div className="loading-container">
+                        <div className="spinner"></div>
+                        <p>ハロウィン魔法をかけています...</p>
+                      </div>
+                    )}
+                    
+                    {transformedImage && !loading && (
+                      <img 
+                        src={transformedImage} 
+                        alt="ハロウィン変換後" 
+                        className="comparison-image"
+                      />
+                    )}
+                    
+                    {!transformedImage && !loading && (
+                      <div className="placeholder-container">
+                        <div className="placeholder-icon">🎭</div>
+                        <p>「ハロウィン変換」ボタンを<br/>押して変換してください</p>
+                      </div>
+                    )}
+                    
+                    {error && (
+                      <div className="error-container">
+                        <p className="error-message">{error}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="controls">
-              <button 
-                onClick={transformToHalloween}
-                disabled={loading}
-                className={`transform-btn ${loading ? 'loading' : ''}`}
-                type="button"
-              >
-                {loading ? (
-                  <>
-                    <span className="btn-spinner"></span>
-                    変換中...
-                  </>
-                ) : (
-                  '🎃 ハロウィン変換'
-                )}
-              </button>
-              
-              {transformedImage && (
+              <div className="controls">
                 <button 
-                  onClick={handleDownload}
-                  className="download-btn"
+                  onClick={transformToHalloween}
+                  disabled={loading}
+                  className={`transform-btn \${loading ? 'loading' : ''}`}
                   type="button"
                 >
-                  📱 ダウンロード
+                  {loading ? (
+                    <>
+                      <span className="btn-spinner"></span>
+                      変換中...
+                    </>
+                  ) : (
+                    '🎃 ハロウィン変換'
+                  )}
                 </button>
-              )}
+                
+                {transformedImage && (
+                  <button 
+                    onClick={handleDownload}
+                    className="download-btn"
+                    type="button"
+                  >
+                    📱 ダウンロード
+                  </button>
+                )}
 
-              <button 
-                onClick={handleReset}
-                className="reset-btn"
-                type="button"
-              >
-                🔄 新しい写真
-              </button>
+                <button 
+                  onClick={handleReset}
+                  className="reset-btn"
+                  type="button"
+                >
+                  🔄 新しい写真
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )
