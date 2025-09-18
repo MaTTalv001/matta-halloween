@@ -59,8 +59,6 @@ graph TB
     end
 ```
 
-````
-
 ## プロジェクト構成
 
 ```
@@ -212,4 +210,7 @@ Production・Preview・Development すべてにチェック
 ### 4. 自動デプロイ
 
 GitHub に push すると自動的にデプロイ
-````
+
+```
+
+```
