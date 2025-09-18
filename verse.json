@@ -1,0 +1,18 @@
+// vercel.json (プロジェクトルートに作成)
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "functions": {
+    "api/*.ts": {
+      "runtime": "@vercel/node@3.0.0"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/((?!api/.*).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
